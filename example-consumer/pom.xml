@@ -24,7 +24,7 @@
     <dependencies>
         <dependency>
             <groupId>com.ps</groupId>
-            <artifactId>ps-rpc-easy</artifactId>
+            <artifactId>ps-rpc-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
