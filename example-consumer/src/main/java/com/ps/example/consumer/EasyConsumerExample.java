@@ -1,5 +1,9 @@
 package com.ps.example.consumer;
 
+import com.ps.easyrpc.RpcApplication;
+import com.ps.easyrpc.config.RpcConfig;
+import com.ps.easyrpc.proxy.ServiceProxyFactory;
+import com.ps.easyrpc.utils.ConfigUtils;
 import com.ps.example.common.model.User;
 import com.ps.example.common.service.UserService;
 
@@ -11,11 +15,15 @@ import com.ps.example.common.service.UserService;
 public class EasyConsumerExample {
 
     public static void main(String[] args) {
+        // 加载配置 测试全部配置是否生效
+        RpcConfig rpc = ConfigUtils.loadConfig(RpcConfig.class, "rpc");
+        System.out.println(rpc);
+
         // 这里需要获取 UserService 的实现类对象
         // 静态代理
-        UserService userService = new UserServiceProxy();
+        // UserService userService = new UserServiceProxy();
         // 动态代理
-        // UserService userService = ServiceProxyFactory.getProxy(UserService.class);
+        UserService userService = ServiceProxyFactory.getProxy(UserService.class);
 
         User user = new User();
         user.setName("pangshuai");
