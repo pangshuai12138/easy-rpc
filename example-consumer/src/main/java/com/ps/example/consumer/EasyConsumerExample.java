@@ -29,6 +29,7 @@ public class EasyConsumerExample {
         user.setName("pangshuai");
         // 调用
         User newUser = userService.getUser(user);
+        // 如果配置文件中mock=true，则应该打印user == null
         if (newUser != null) {
             System.out.println(newUser.getName());
         } else {
