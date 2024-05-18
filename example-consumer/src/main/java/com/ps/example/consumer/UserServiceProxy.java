@@ -2,6 +2,8 @@ package com.ps.example.consumer;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import com.ps.easyrpc.RpcApplication;
+import com.ps.easyrpc.serializer.SerializerFactory;
 import com.ps.example.common.model.User;
 import com.ps.example.common.service.UserService;
 import com.ps.easyrpc.model.RpcRequest;
@@ -21,7 +23,7 @@ public class UserServiceProxy implements UserService {
     @Override
     public User getUser(User user) {
         // 指定序列化器
-        Serializer serializer = new JdkSerializer();
+        final Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializer());
 
         // 发请求
         // 这里是与动态代理的区别，动态代理 serviceName 和 methodName 和 parameterTypes 和 args 是变量；静态代理是确定值

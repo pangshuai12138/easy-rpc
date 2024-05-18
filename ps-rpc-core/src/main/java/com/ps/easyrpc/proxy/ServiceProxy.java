@@ -2,10 +2,12 @@ package com.ps.easyrpc.proxy;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import com.ps.easyrpc.RpcApplication;
 import com.ps.easyrpc.model.RpcRequest;
 import com.ps.easyrpc.model.RpcResponse;
 import com.ps.easyrpc.serializer.JdkSerializer;
 import com.ps.easyrpc.serializer.Serializer;
+import com.ps.easyrpc.serializer.SerializerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
@@ -27,7 +29,8 @@ public class ServiceProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // 指定序列化器
-        Serializer serializer = new JdkSerializer();
+        final Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializer());
+        // System.out.println("序列化方式：" + RpcApplication.getRpcConfig().getSerializer());
 
         // 构造请求
         RpcRequest rpcRequest = RpcRequest.builder()

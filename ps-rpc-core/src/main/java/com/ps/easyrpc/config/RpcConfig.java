@@ -1,5 +1,6 @@
 package com.ps.easyrpc.config;
 
+import com.ps.easyrpc.serializer.SerializerKeys;
 import lombok.Data;
 
 /**
@@ -32,5 +33,10 @@ public class RpcConfig {
      * 模拟调用标识
      */
     private boolean mock = false;
+
+    /**
+     * 序列化器
+     */
+    private String serializer = SerializerKeys.JDK;
 
 }
