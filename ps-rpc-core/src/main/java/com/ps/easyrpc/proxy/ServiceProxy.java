@@ -1,10 +1,16 @@
 package com.ps.easyrpc.proxy;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.ps.easyrpc.RpcApplication;
+import com.ps.easyrpc.config.RpcConfig;
+import com.ps.easyrpc.constant.RpcConstant;
 import com.ps.easyrpc.model.RpcRequest;
 import com.ps.easyrpc.model.RpcResponse;
+import com.ps.easyrpc.model.ServiceMetaInfo;
+import com.ps.easyrpc.registry.Registry;
+import com.ps.easyrpc.registry.RegistryFactory;
 import com.ps.easyrpc.serializer.JdkSerializer;
 import com.ps.easyrpc.serializer.Serializer;
 import com.ps.easyrpc.serializer.SerializerFactory;
@@ -12,6 +18,7 @@ import com.ps.easyrpc.serializer.SerializerFactory;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @Description: 服务代理（JDK 动态代理）
@@ -33,8 +40,9 @@ public class ServiceProxy implements InvocationHandler {
         // System.out.println("序列化方式：" + RpcApplication.getRpcConfig().getSerializer());
 
         // 构造请求
+        String serviceName = method.getDeclaringClass().getName();
         RpcRequest rpcRequest = RpcRequest.builder()
-                .serviceName(method.getDeclaringClass().getName())
+                .serviceName(serviceName)
                 .methodName(method.getName())
                 .parameterTypes(method.getParameterTypes())
                 .args(args)
@@ -42,9 +50,22 @@ public class ServiceProxy implements InvocationHandler {
         try {
             // 序列化
             byte[] bodyBytes = serializer.serialize(rpcRequest);
+
+            // 从注册中心获取服务提供者请求地址
+            RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+            Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig().getRegistry());
+            ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
+            serviceMetaInfo.setServiceName(serviceName);
+            serviceMetaInfo.setServiceVersion(RpcConstant.DEFAULT_SERVICE_VERSION);
+            List<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
+            if (CollUtil.isEmpty(serviceMetaInfoList)) {
+                throw new RuntimeException("暂无服务地址");
+            }
+            // todo 暂时先取第一个,待优化
+            ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfoList.get(0);
+
             // 发送请求
-            // todo 注意，这里地址被硬编码了（需要使用注册中心和服务发现机制解决）
-            try (HttpResponse httpResponse = HttpRequest.post("http://localhost:8080")
+            try (HttpResponse httpResponse = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())
                     .body(bodyBytes)
                     .execute()) {
                 byte[] result = httpResponse.bodyBytes();

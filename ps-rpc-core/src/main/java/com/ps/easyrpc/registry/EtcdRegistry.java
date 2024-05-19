@@ -29,7 +29,8 @@ public class EtcdRegistry implements Registry{
     @Override
     public void init(RegistryConfig registryConfig) {
         client = Client.builder().endpoints(registryConfig.getAddress())
-                .connectTimeout(Duration.ofMillis(registryConfig.getTimeout())).build();
+                .connectTimeout(Duration.ofMillis(registryConfig.getTimeout()))
+                .build();
         kvClient = client.getKVClient();
     }
 
