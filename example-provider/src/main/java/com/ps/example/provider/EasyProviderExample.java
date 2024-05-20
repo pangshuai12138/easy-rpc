@@ -24,7 +24,7 @@ public class EasyProviderExample {
 
         // 启动 web 服务
         HttpServer httpServer = new VertxHttpServer();
-        // 引入配置中的端口号，而不是硬编码为8080
+        // 引入配置中的端口号，而不是硬编码为8090
         httpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
     }
 }
