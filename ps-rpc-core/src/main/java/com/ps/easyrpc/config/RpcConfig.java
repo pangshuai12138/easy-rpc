@@ -1,5 +1,6 @@
 package com.ps.easyrpc.config;
 
+import com.ps.easyrpc.fault.retry.RetryStrategyKeys;
 import com.ps.easyrpc.loadbalancer.LoadBalancerKeys;
 import com.ps.easyrpc.serializer.SerializerKeys;
 import lombok.Data;
@@ -49,5 +50,10 @@ public class RpcConfig {
      * 负载均衡器
      */
     private String loadBalancer = LoadBalancerKeys.ROUND_ROBIN;
+
+    /**
+     * 重试策略
+     */
+    private String retryStrategy = RetryStrategyKeys.NO;
 
 }

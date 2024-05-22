@@ -1,0 +1,2 @@
+no=com.ps.easyrpc.fault.retry.NoRetryStrategy
+fixedInterval=com.ps.easyrpc.fault.retry.FixedIntervalRetryStrategy

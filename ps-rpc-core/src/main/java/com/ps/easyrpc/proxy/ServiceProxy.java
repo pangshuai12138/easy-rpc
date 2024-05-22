@@ -6,6 +6,8 @@ import cn.hutool.http.HttpResponse;
 import com.ps.easyrpc.RpcApplication;
 import com.ps.easyrpc.config.RpcConfig;
 import com.ps.easyrpc.constant.RpcConstant;
+import com.ps.easyrpc.fault.retry.RetryStrategy;
+import com.ps.easyrpc.fault.retry.RetryStrategyFactory;
 import com.ps.easyrpc.loadbalancer.LoadBalancer;
 import com.ps.easyrpc.loadbalancer.LoadBalancerFactory;
 import com.ps.easyrpc.model.RpcRequest;
@@ -75,18 +77,31 @@ public class ServiceProxy implements InvocationHandler {
             ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams,serviceMetaInfoList);
 
             // 发送请求
-            try (HttpResponse httpResponse = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())
-                    .body(bodyBytes)
-                    .execute()) {
-                byte[] result = httpResponse.bodyBytes();
-                // 反序列化
-                RpcResponse rpcResponse = serializer.deserialize(result, RpcResponse.class);
-                return rpcResponse.getData();
-            }
+            // 使用重试机制
+            RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
+            System.out.println("重试策略：" + rpcConfig.getRetryStrategy());
+            RpcResponse rpcResponse = retryStrategy.doRetry(() ->
+                    doRequest(bodyBytes,selectedServiceMetaInfo,serializer)
+            );
+            return rpcResponse.getData();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    private RpcResponse doRequest(byte[] bodyBytes, ServiceMetaInfo serviceMetaInfo,Serializer serializer) {
+        try (HttpResponse httpResponse = HttpRequest.post(serviceMetaInfo.getServiceAddress())
+                .body(bodyBytes)
+                .execute()) {
+            byte[] result = httpResponse.bodyBytes();
+            // 反序列化
+            RpcResponse rpcResponse = serializer.deserialize(result, RpcResponse.class);
+            return rpcResponse;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
