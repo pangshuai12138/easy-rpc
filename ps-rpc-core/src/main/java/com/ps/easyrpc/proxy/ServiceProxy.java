@@ -72,7 +72,7 @@ public class ServiceProxy implements InvocationHandler {
             Map<String, Object> requestParams = new HashMap<>();
             requestParams.put("methodName", rpcRequest.getMethodName());
             System.out.println("负载均衡类型：" + rpcConfig.getLoadBalancer());
-            ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(serviceMetaInfoList);
+            ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams,serviceMetaInfoList);
 
             // 发送请求
             try (HttpResponse httpResponse = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())

@@ -16,5 +16,5 @@ public interface LoadBalancer {
      * @param serviceMetaInfoList 可用服务列表
      * @return
      */
-    ServiceMetaInfo select(List<ServiceMetaInfo> serviceMetaInfoList);
+    ServiceMetaInfo select(Map<String, Object> requestParams,List<ServiceMetaInfo> serviceMetaInfoList);
 }

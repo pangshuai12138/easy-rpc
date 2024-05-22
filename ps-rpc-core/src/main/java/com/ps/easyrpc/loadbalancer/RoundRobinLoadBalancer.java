@@ -17,7 +17,7 @@ public class RoundRobinLoadBalancer implements LoadBalancer {
     private final AtomicInteger currentIndex = new AtomicInteger(0);
 
     @Override
-    public ServiceMetaInfo select(List<ServiceMetaInfo> serviceMetaInfoList) {
+    public ServiceMetaInfo select(Map<String, Object> requestParams,List<ServiceMetaInfo> serviceMetaInfoList) {
         if (serviceMetaInfoList.isEmpty()) {
             return null;
         }

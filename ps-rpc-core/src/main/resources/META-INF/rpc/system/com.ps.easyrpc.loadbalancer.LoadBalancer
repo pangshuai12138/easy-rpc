@@ -1,2 +1,3 @@
 roundRobin=com.ps.easyrpc.loadbalancer.RoundRobinLoadBalancer
 random=com.ps.easyrpc.loadbalancer.RandomLoadBalancer
+consistentHash=com.ps.easyrpc.loadbalancer.ConsistentHashLoadBalancer
