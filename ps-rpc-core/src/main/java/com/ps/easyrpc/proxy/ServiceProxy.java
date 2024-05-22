@@ -6,6 +6,8 @@ import cn.hutool.http.HttpResponse;
 import com.ps.easyrpc.RpcApplication;
 import com.ps.easyrpc.config.RpcConfig;
 import com.ps.easyrpc.constant.RpcConstant;
+import com.ps.easyrpc.loadbalancer.LoadBalancer;
+import com.ps.easyrpc.loadbalancer.LoadBalancerFactory;
 import com.ps.easyrpc.model.RpcRequest;
 import com.ps.easyrpc.model.RpcResponse;
 import com.ps.easyrpc.model.ServiceMetaInfo;
@@ -18,7 +20,9 @@ import com.ps.easyrpc.serializer.SerializerFactory;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 服务代理（JDK 动态代理）
@@ -61,8 +65,14 @@ public class ServiceProxy implements InvocationHandler {
             if (CollUtil.isEmpty(serviceMetaInfoList)) {
                 throw new RuntimeException("暂无服务地址");
             }
-            // todo 暂时先取第一个,待优化
-            ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfoList.get(0);
+
+            // 负载均衡
+            LoadBalancer loadBalancer = LoadBalancerFactory.getInstance(rpcConfig.getLoadBalancer());
+            // 将调用方法名（请求路径）作为负载均衡参数
+            Map<String, Object> requestParams = new HashMap<>();
+            requestParams.put("methodName", rpcRequest.getMethodName());
+            System.out.println("负载均衡类型：" + rpcConfig.getLoadBalancer());
+            ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(serviceMetaInfoList);
 
             // 发送请求
             try (HttpResponse httpResponse = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())
