@@ -16,6 +16,11 @@ public interface LoadBalancerKeys {
     String RANDOM = "random";
 
     /**
+     * 随机
+     */
+    String WEIGHT_RANDOM = "weightRandom";
+
+    /**
      * 一致性hash
      */
     String CONSISTENT_HASH = "consistentHash";
