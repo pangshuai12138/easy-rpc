@@ -1,2 +1,3 @@
 no=com.ps.easyrpc.fault.retry.NoRetryStrategy
 fixedInterval=com.ps.easyrpc.fault.retry.FixedIntervalRetryStrategy
+exponentInterval=com.ps.easyrpc.fault.retry.ExponentIntervalRetryStrategy

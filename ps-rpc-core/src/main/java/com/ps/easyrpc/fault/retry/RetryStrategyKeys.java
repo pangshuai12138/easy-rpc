@@ -15,4 +15,9 @@ public interface RetryStrategyKeys {
      */
     String FIXED_INTERVAL = "fixedInterval";
 
+    /**
+     * 固定时间间隔
+     */
+    String EXPONENT_INTERVAL = "exponentInterval";
+
 }
